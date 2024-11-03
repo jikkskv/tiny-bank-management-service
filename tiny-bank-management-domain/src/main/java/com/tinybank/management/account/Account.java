@@ -4,6 +4,7 @@ import com.tinybank.management.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -11,8 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Account {
 
-    @Setter
     @Getter
+    @Setter
     private Long accountId;
 
     @Getter
@@ -22,6 +23,7 @@ public class Account {
     private List<Transaction> transactions;
 
     @Getter
+    @Setter
     private User user;
 
     @Setter
@@ -31,26 +33,28 @@ public class Account {
 
     public static final int LOCK_ATTEMPT_INTERVAL = 2000;
 
-    Account() {
+    public Account() {
         balance = 0.0D;
         lock = new ReentrantLock();
         accountStatus = AccountStatus.AVAILABLE;
+        transactions = new LinkedList<>();
     }
 
     public boolean addBalance(double amount) {
-        if(!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
+        if (!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
         if (amount < 0) return false;
         balance = balance + amount;
         return true;
     }
 
     public boolean subtractBalance(double amount) {
-        if(!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
+        if (!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
         if (amount < 0) return false;
         if (amount > balance) throw new RuntimeException("Insufficient balance");
         try {
             boolean lockStatus = lock.tryLock(LOCK_ATTEMPT_INTERVAL, TimeUnit.MILLISECONDS);
-            if (!lockStatus || amount > balance) throw new RuntimeException("Insufficient balance due to concurrent transaction");
+            if (!lockStatus || amount > balance)
+                throw new RuntimeException("Insufficient balance due to concurrent transaction");
             if (amount <= balance) {
                 balance = balance - amount;
                 return true;
