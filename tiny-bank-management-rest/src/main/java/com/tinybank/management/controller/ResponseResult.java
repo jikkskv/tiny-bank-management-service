@@ -22,6 +22,11 @@ public class ResponseResult<T> implements Serializable {
         this.data = data;
     }
 
+    public ResponseResult(ErrorCode errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
     public static ResponseResult success() {
         return success(Collections.emptyMap());
     }
@@ -35,8 +40,8 @@ public class ResponseResult<T> implements Serializable {
         return failure(errorCode, "");
     }
 
-    public static <T> ResponseResult<T> failure(final ErrorCode errorCode, final T data) {
-        ResponseResult<T> responseResult = new ResponseResult(errorCode, data);
+    public static <T> ResponseResult<T> failure(final ErrorCode errorCode, final String errorMessage) {
+        ResponseResult<T> responseResult = new ResponseResult(errorCode, errorMessage);
         return responseResult;
     }
 }

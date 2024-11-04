@@ -24,5 +24,10 @@ hs_err_pid*
 replay_pid*
 /mvnw.cmd
 /mvnw
+.idea/
 /.mvn/wrapper/maven-wrapper.properties
 /.idea/workspace.xml
+/tiny-bank-management-rest/target/
+/tiny-bank-management-domain/target/
+/tiny-bank-management-core/target/
+/coverage-module/target/

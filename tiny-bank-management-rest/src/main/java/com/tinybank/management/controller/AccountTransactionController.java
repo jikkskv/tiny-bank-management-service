@@ -22,38 +22,50 @@ public class AccountTransactionController {
 
     @PostMapping("/depositMoney")
     public ResponseResult depositMoney(@RequestBody SingleAccountTransactionRequestModel accountTransactionRequestModel) {
+        log.info("Start of the depositMoney, accountTransactionRequestModel: {}", accountTransactionRequestModel);
         try {
-            accountTransactionalService.deposit(accountTransactionRequestModel.accountId(), accountTransactionRequestModel.amount());
+            accountTransactionalService.deposit(accountTransactionRequestModel.accountId(), accountTransactionRequestModel.amount(), accountTransactionRequestModel.remarks());
+            log.info("End of the depositMoney, accountTransactionRequestModel: {}, success", accountTransactionRequestModel);
+            return ResponseResult.success();
         } catch (DepositOperationException ex) {
+            log.error("End of the depositMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.DEPOSIT_OPERATION_FAILED, ex.getMessage());
         } catch (Exception ex) {
+            log.error("End of the depositMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.SYSTEM_ERROR);
         }
-        return ResponseResult.failure(BizErrorCodeEnum.DEPOSIT_OPERATION_FAILED);
     }
 
     @PostMapping("/withdrawMoney")
     public ResponseResult withdrawMoney(@RequestBody SingleAccountTransactionRequestModel accountTransactionRequestModel) {
+        log.info("Start of the withdrawMoney, accountTransactionRequestModel: {}", accountTransactionRequestModel);
         try {
-            accountTransactionalService.withdraw(accountTransactionRequestModel.accountId(), accountTransactionRequestModel.amount());
+            accountTransactionalService.withdraw(accountTransactionRequestModel.accountId(), accountTransactionRequestModel.amount(), accountTransactionRequestModel.remarks());
+            log.info("End of the withdrawMoney, accountTransactionRequestModel: {}, success", accountTransactionRequestModel);
+            return ResponseResult.success();
         } catch (WithdrawOperationException ex) {
+            log.error("End of the withdrawMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.WITHDRAW_OPERATION_FAILED, ex.getMessage());
         } catch (Exception ex) {
+            log.error("End of the withdrawMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.SYSTEM_ERROR);
         }
-        return ResponseResult.failure(BizErrorCodeEnum.WITHDRAW_OPERATION_FAILED);
     }
 
     @PostMapping("/transferMoney")
     public ResponseResult transferMoney(@RequestBody DualAccountTransactionRequestModel accountTransactionRequestModel) {
+        log.info("Start of the transferMoney, accountTransactionRequestModel: {}", accountTransactionRequestModel);
         try {
-            accountTransactionalService.transfer(accountTransactionRequestModel.fromAccountId(), accountTransactionRequestModel.toAccountId(), accountTransactionRequestModel.amount());
+            accountTransactionalService.transfer(accountTransactionRequestModel.fromAccountId(), accountTransactionRequestModel.toAccountId(), accountTransactionRequestModel.amount(), accountTransactionRequestModel.remarks());
+            log.info("End of the transferMoney, accountTransactionRequestModel: {}, success", accountTransactionRequestModel);
+            return ResponseResult.success();
         } catch (TransferOperationException ex) {
+            log.error("End of the transferMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.TRANSFER_OPERATION_FAILED, ex.getMessage());
         } catch (Exception ex) {
+            log.error("End of the transferMoney, accountTransactionRequestModel: {}, failed", accountTransactionRequestModel, ex);
             return ResponseResult.failure(BizErrorCodeEnum.SYSTEM_ERROR);
         }
-        return ResponseResult.failure(BizErrorCodeEnum.TRANSFER_OPERATION_FAILED);
     }
 
 }

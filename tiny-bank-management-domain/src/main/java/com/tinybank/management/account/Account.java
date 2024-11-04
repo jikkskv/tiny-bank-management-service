@@ -41,15 +41,15 @@ public class Account {
         transactions = new LinkedList<>();
     }
 
-    public boolean addBalance(double amount) {
+    public boolean addBalance(double amount, String remarks) {
         if (!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
         if (amount < 0) return false;
         balance = balance + amount;
-        addTransaction(this.accountId, amount, TransactionType.DEPOSIT);
+        addTransaction(this.accountId, amount, TransactionType.DEPOSIT, remarks);
         return true;
     }
 
-    public boolean subtractBalance(double amount) {
+    public boolean subtractBalance(double amount, String remarks) {
         if (!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
         if (amount < 0) return false;
         if (amount > balance) throw new RuntimeException("Insufficient balance");
@@ -59,7 +59,7 @@ public class Account {
                 throw new RuntimeException("Insufficient balance due to concurrent transaction");
             if (amount <= balance) {
                 balance = balance - amount;
-                addTransaction(this.accountId, amount, TransactionType.WITHDRAW);
+                addTransaction(this.accountId, amount, TransactionType.WITHDRAW, remarks);
                 return true;
             }
         } catch (Exception ex) {
@@ -70,12 +70,13 @@ public class Account {
         return false;
     }
 
-    private void addTransaction(long accountId, double amount, TransactionType transactionType) {
+    private void addTransaction(long accountId, double amount, TransactionType transactionType, String remarks) {
         Transaction transaction = Transaction.builder()
                 .accountId(accountId)
                 .amount(amount)
                 .transactionType(transactionType)
                 .transactionDate(LocalDateTime.now())
+                .remarks(remarks)
                 .build();
         this.getTransactions().add(transaction);
     }

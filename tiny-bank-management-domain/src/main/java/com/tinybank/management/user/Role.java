@@ -21,7 +21,7 @@ public enum Role {
     public static Role of(String code) {
         Role result = roleCodeMap.get(code);
         if (result == null) {
-            throw new IllegalArgumentException("Invalid direction code: " + code);
+            throw new IllegalArgumentException("Invalid input code: " + code);
         }
         return result;
     }
