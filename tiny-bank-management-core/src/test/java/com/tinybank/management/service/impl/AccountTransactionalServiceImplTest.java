@@ -1,7 +1,4 @@
 package com.tinybank.management.service.impl;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.any;
 
 import com.tinybank.management.account.Account;
 import com.tinybank.management.account.AccountStatus;
@@ -10,12 +7,14 @@ import com.tinybank.management.exception.InvalidAccountException;
 import com.tinybank.management.exception.TransferOperationException;
 import com.tinybank.management.exception.WithdrawOperationException;
 import com.tinybank.management.service.AccountStorageDB;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountTransactionalServiceImplTest {
@@ -33,6 +32,7 @@ class AccountTransactionalServiceImplTest {
     void testDeposit_success() throws InvalidAccountException {
         Account account = spy(new Account());
         double amount = 123D;
+        account.setAccountId(1L);
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(account);
 
         assertDoesNotThrow(() -> accountTransactionalService.deposit(fromAccountId, amount));
@@ -72,6 +72,7 @@ class AccountTransactionalServiceImplTest {
     void testWithdraw_success() throws Exception {
         Account account = spy(new Account());
         double currentBalance = 1000D;
+        account.setAccountId(1L);
         account.addBalance(currentBalance);
         double amount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(account);
@@ -85,12 +86,13 @@ class AccountTransactionalServiceImplTest {
     void testWithdraw_insufficientBalance() throws InvalidAccountException {
         Account account = spy(new Account());
         double currentBalance = 123D;
+        account.setAccountId(1L);
         account.addBalance(currentBalance);
         double amount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(account);
 
-        assertThrows(WithdrawOperationException.class, () -> accountTransactionalService.withdraw(fromAccountId, amount+1));
-        verify(account).subtractBalance(amount+1);
+        assertThrows(WithdrawOperationException.class, () -> accountTransactionalService.withdraw(fromAccountId, amount + 1));
+        verify(account).subtractBalance(amount + 1);
     }
 
     @Test
@@ -126,6 +128,8 @@ class AccountTransactionalServiceImplTest {
         Account fromAccount = spy(new Account());
         Account toAccount = spy(new Account());
         double currentBalance = 123D;
+        fromAccount.setAccountId(1L);
+        toAccount.setAccountId(1L);
         fromAccount.addBalance(currentBalance);
         double transferAmount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(fromAccount);
@@ -143,15 +147,16 @@ class AccountTransactionalServiceImplTest {
         Account fromAccount = spy(new Account());
         Account toAccount = spy(new Account());
         double currentBalance = 123D;
+        fromAccount.setAccountId(1L);
         fromAccount.addBalance(currentBalance);
         double transferAmount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(fromAccount);
         when(accountStorageDB.getAccount(toAccountId)).thenReturn(toAccount);
 
-        assertThrows(TransferOperationException.class, () -> accountTransactionalService.transfer(fromAccountId, toAccountId, transferAmount+1));
+        assertThrows(TransferOperationException.class, () -> accountTransactionalService.transfer(fromAccountId, toAccountId, transferAmount + 1));
         assertEquals(123D, fromAccount.getBalance());
         assertEquals(0D, toAccount.getBalance());
-        verify(fromAccount).subtractBalance(transferAmount+1);
+        verify(fromAccount).subtractBalance(transferAmount + 1);
         verify(toAccount, never()).addBalance(anyDouble());
     }
 
@@ -160,6 +165,8 @@ class AccountTransactionalServiceImplTest {
         Account fromAccount = spy(new Account());
         Account toAccount = spy(new Account());
         double currentBalance = 123D;
+        fromAccount.setAccountId(1L);
+        toAccount.setAccountId(1L);
         fromAccount.addBalance(currentBalance);
         double transferAmount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(fromAccount);
@@ -183,6 +190,7 @@ class AccountTransactionalServiceImplTest {
         Account fromAccount = spy(new Account());
         Account toAccount = spy(new Account());
         double currentBalance = 123D;
+        fromAccount.setAccountId(1L);
         fromAccount.addBalance(currentBalance);
         double transferAmount = 123D;
         when(accountStorageDB.getAccount(fromAccountId)).thenReturn(fromAccount);
