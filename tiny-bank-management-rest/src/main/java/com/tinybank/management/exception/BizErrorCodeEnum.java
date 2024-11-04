@@ -11,7 +11,8 @@ public enum BizErrorCodeEnum implements ErrorCode {
     CANCEL_ACCOUNT_FAILED(500_002),
     DEPOSIT_OPERATION_FAILED(500_003),
     WITHDRAW_OPERATION_FAILED(500_004),
-    TRANSFER_OPERATION_FAILED(500_005);
+    TRANSFER_OPERATION_FAILED(500_005),
+    GET_TRANSACTION_FAILED(500_006);
 
     private int code;
     private String message;

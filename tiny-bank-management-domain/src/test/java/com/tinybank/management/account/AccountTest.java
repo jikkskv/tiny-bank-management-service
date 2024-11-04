@@ -17,7 +17,7 @@ class AccountTest {
         Account account = new Account();
         account.setAccountId(1L);
         double amount = 100.0;
-        boolean result = account.addBalance(amount);
+        boolean result = account.addBalance(amount, "deposit");
 
         assertTrue(result, "The balance should be added successfully.");
         assertEquals(100.0, account.getBalance(), "Balance should be 100 after adding 100.");
@@ -30,7 +30,7 @@ class AccountTest {
         Account account = new Account();
         account.setAccountId(1L);
         double amount = -50.0;
-        boolean result = account.addBalance(amount);
+        boolean result = account.addBalance(amount, "deposit");
 
         assertFalse(result, "The balance should not be added for negative amounts.");
         assertEquals(0.0, account.getBalance(), "Balance should remain 0 if addition fails.");
@@ -42,7 +42,7 @@ class AccountTest {
         Account account = new Account();
         account.setAccountId(1L);
         account.setAccountStatus(AccountStatus.LOCKED);
-        boolean result = account.addBalance(100.0);
+        boolean result = account.addBalance(100.0, "deposit");
 
         assertFalse(result, "The balance should not be added if the account status is not AVAILABLE.");
         assertEquals(0.0, account.getBalance(), "Balance should remain 0 if addition fails.");
@@ -53,9 +53,9 @@ class AccountTest {
     void testSubtractBalance_success() {
         Account account = new Account();
         account.setAccountId(1L);
-        account.addBalance(200.0);  // Adding initial balance
+        account.addBalance(200.0, "deposit");  // Adding initial balance
 
-        boolean result = account.subtractBalance(100.0);
+        boolean result = account.subtractBalance(100.0, "withdraw");
 
         assertTrue(result, "The balance should be subtracted successfully.");
         assertEquals(100.0, account.getBalance(), "Balance should be 100 after subtracting 100 from 200.");
@@ -67,9 +67,9 @@ class AccountTest {
     void testSubtractBalance_failedDueToInsufficientFunds() {
         Account account = new Account();
         account.setAccountId(1L);
-        account.addBalance(50.0);  // Adding initial balance
+        account.addBalance(50.0, "deposit");  // Adding initial balance
 
-        Exception exception = assertThrows(RuntimeException.class, () -> account.subtractBalance(100.0));
+        Exception exception = assertThrows(RuntimeException.class, () -> account.subtractBalance(100.0, "withdraw"));
         assertEquals("Insufficient balance", exception.getMessage());
         assertEquals(50.0, account.getBalance(), "Balance should remain unchanged after failed subtraction.");
         assertEquals(1, account.getTransactions().size(), "Only the deposit transaction should be recorded.");
@@ -79,7 +79,7 @@ class AccountTest {
     void testSubtractBalance_failedDueToNegativeAmount() {
         Account account = new Account();
         account.setAccountId(1L);
-        boolean result = account.subtractBalance(-10.0);
+        boolean result = account.subtractBalance(-10.0, "withdraw");
 
         assertFalse(result, "The balance should not be subtracted for negative amounts.");
         assertEquals(0.0, account.getBalance(), "Balance should remain unchanged.");
@@ -90,10 +90,10 @@ class AccountTest {
     void testSubtractBalance_failedDueToLockedAccountStatus() {
         Account account = new Account();
         account.setAccountId(1L);
-        account.addBalance(100.0);
+        account.addBalance(100.0, "deposit");
         account.setAccountStatus(AccountStatus.LOCKED);
 
-        boolean result = account.subtractBalance(50.0);
+        boolean result = account.subtractBalance(50.0, "withdraw");
 
         assertFalse(result, "The balance should not be subtracted if the account status is not AVAILABLE.");
         assertEquals(100.0, account.getBalance(), "Balance should remain unchanged.");
@@ -104,7 +104,7 @@ class AccountTest {
     void testSubtractBalance_testConcurrentWithdrawl() throws InterruptedException {
         Account account = new Account();
         account.setAccountId(1L);
-        account.addBalance(500.0);
+        account.addBalance(500.0, "deposit");
         int numberOfThreads = 40;
 
         // Lock the account manually to simulate a concurrent transaction
@@ -113,7 +113,7 @@ class AccountTest {
         for (int cntr = 0; cntr < numberOfThreads; cntr++) {
             futures.add(executorService.submit(() -> {
                 try {
-                    return account.subtractBalance(50.0);
+                    return account.subtractBalance(50.0, "withdraw");
                 } catch (Exception e) {
                     return false;
                 }

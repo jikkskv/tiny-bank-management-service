@@ -38,15 +38,15 @@ class AccountTransactionControllerTest {
 
     @BeforeEach
     void setUp() {
-        depositRequest = new SingleAccountTransactionRequestModel(1L, 100.0);
-        withdrawRequest = new SingleAccountTransactionRequestModel(1L, 50.0);
-        transferRequest = new DualAccountTransactionRequestModel(1L, 2L, 75.0);
+        depositRequest = new SingleAccountTransactionRequestModel(1L, 100.0, "deposit");
+        withdrawRequest = new SingleAccountTransactionRequestModel(1L, 50.0, "withdraw");
+        transferRequest = new DualAccountTransactionRequestModel(1L, 2L, 75.0, "transfer");
     }
 
     @Test
     void testDepositMoney_success() throws Exception {
         // No exception expected, simulating a successful deposit
-        doNothing().when(accountTransactionalService).deposit(anyLong(), anyDouble());
+        doNothing().when(accountTransactionalService).deposit(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/depositMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,7 +56,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testDepositMoney_failure_dueToDepositOperationException() throws Exception {
-        doThrow(new DepositOperationException("Deposit failed")).when(accountTransactionalService).deposit(anyLong(), anyDouble());
+        doThrow(new DepositOperationException("Deposit failed")).when(accountTransactionalService).deposit(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/depositMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +67,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testDepositMoney_failure_dueToUnknownException() throws Exception {
-        doThrow(new IllegalArgumentException("Deposit failed")).when(accountTransactionalService).deposit(anyLong(), anyDouble());
+        doThrow(new IllegalArgumentException("Deposit failed")).when(accountTransactionalService).deposit(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/depositMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +78,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testWithdrawMoney_success() throws Exception {
-        doNothing().when(accountTransactionalService).withdraw(anyLong(), anyDouble());
+        doNothing().when(accountTransactionalService).withdraw(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/withdrawMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testWithdrawMoney_failure_dueToWithdrawOperationException() throws Exception {
-        doThrow(new WithdrawOperationException("Withdraw failed")).when(accountTransactionalService).withdraw(anyLong(), anyDouble());
+        doThrow(new WithdrawOperationException("Withdraw failed")).when(accountTransactionalService).withdraw(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/withdrawMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testWithdrawMoney_failure_dueToUnknownException() throws Exception {
-        doThrow(new IllegalArgumentException("Withdraw failed")).when(accountTransactionalService).withdraw(anyLong(), anyDouble());
+        doThrow(new IllegalArgumentException("Withdraw failed")).when(accountTransactionalService).withdraw(anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/withdrawMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testTransferMoney_success() throws Exception {
-        doNothing().when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble());
+        doNothing().when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/transferMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +120,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testTransferMoney_failure_dueToTransferOperationException() throws Exception {
-        doThrow(new TransferOperationException("Transfer failed")).when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble());
+        doThrow(new TransferOperationException("Transfer failed")).when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/transferMoney")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -131,7 +131,7 @@ class AccountTransactionControllerTest {
 
     @Test
     void testTransferMoney_failure_dueToUnknownException() throws Exception {
-        doThrow(new IllegalArgumentException("Transfer failed")).when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble());
+        doThrow(new IllegalArgumentException("Transfer failed")).when(accountTransactionalService).transfer(anyLong(), anyLong(), anyDouble(), anyString());
 
         mockMvc.perform(post("/transferMoney")
                         .contentType(MediaType.APPLICATION_JSON)

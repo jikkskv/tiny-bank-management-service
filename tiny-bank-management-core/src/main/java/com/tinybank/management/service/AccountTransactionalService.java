@@ -7,9 +7,9 @@ import com.tinybank.management.exception.WithdrawOperationException;
 
 public interface AccountTransactionalService {
 
-    void deposit(Long accountId, double amount) throws DepositOperationException;
+    void deposit(Long accountId, double amount, String remarks) throws DepositOperationException;
 
-    void withdraw(Long accountId, double amount) throws WithdrawOperationException;
+    void withdraw(Long accountId, double amount, String remarks) throws WithdrawOperationException;
 
-    void transfer(Long fromAccountId, Long toAccountId, double amount) throws InvalidAccountException, TransferOperationException;
+    void transfer(Long fromAccountId, Long toAccountId, double amount, String remarks) throws InvalidAccountException, TransferOperationException;
 }

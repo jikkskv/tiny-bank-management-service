@@ -16,4 +16,5 @@ public class Transaction {
     private Double amount;
     private TransactionType transactionType;
     private LocalDateTime transactionDate;
+    private String remarks;
 }

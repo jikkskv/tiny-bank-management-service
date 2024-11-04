@@ -7,4 +7,8 @@ public class CancelAccountException extends Exception {
     public CancelAccountException() {
         super("Cancel account failed");
     }
+
+    public CancelAccountException(String message) {
+        super(message);
+    }
 }
