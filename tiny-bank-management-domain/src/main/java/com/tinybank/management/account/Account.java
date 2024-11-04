@@ -4,6 +4,7 @@ import com.tinybank.management.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +45,7 @@ public class Account {
         if (!accountStatus.equals(AccountStatus.AVAILABLE)) return false;
         if (amount < 0) return false;
         balance = balance + amount;
+        addTransaction(this.accountId, amount, TransactionType.DEPOSIT);
         return true;
     }
 
@@ -57,6 +59,7 @@ public class Account {
                 throw new RuntimeException("Insufficient balance due to concurrent transaction");
             if (amount <= balance) {
                 balance = balance - amount;
+                addTransaction(this.accountId, amount, TransactionType.WITHDRAW);
                 return true;
             }
         } catch (Exception ex) {
@@ -65,5 +68,15 @@ public class Account {
             lock.unlock();
         }
         return false;
+    }
+
+    private void addTransaction(long accountId, double amount, TransactionType transactionType) {
+        Transaction transaction = Transaction.builder()
+                .accountId(accountId)
+                .amount(amount)
+                .transactionType(transactionType)
+                .transactionDate(LocalDateTime.now())
+                .build();
+        this.getTransactions().add(transaction);
     }
 }
