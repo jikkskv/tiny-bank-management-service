@@ -15,4 +15,6 @@ public interface AccountCrudService {
     boolean cancelAccount(Long accountId) throws CancelAccountException;
 
     List<Transaction> getTransaction(Long accountId) throws InvalidAccountException;
+
+    Double getBalance(Long accountId) throws InvalidAccountException;
 }

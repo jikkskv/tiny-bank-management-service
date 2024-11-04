@@ -2,8 +2,11 @@ package com.tinybank.management.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tinybank.management.account.Account;
+import com.tinybank.management.account.Transaction;
+import com.tinybank.management.exception.BizErrorCodeEnum;
 import com.tinybank.management.exception.CancelAccountException;
 import com.tinybank.management.exception.CreateAccountException;
+import com.tinybank.management.exception.InvalidAccountException;
 import com.tinybank.management.model.account.CreateAccountRequestModel;
 import com.tinybank.management.service.AccountCrudService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +17,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -114,5 +119,83 @@ class AccountCrudControllerTest {
                         .param("accountId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.errorCode").value("CANCEL_ACCOUNT_FAILED"));
+    }
+
+    @Test
+    void testGetTransaction_success() throws Exception {
+        Long accountId = 1L;
+        List<Transaction> transactions = List.of(new Transaction()); // mock transaction list
+
+        when(accountCrudService.getTransaction(accountId)).thenReturn(transactions);
+
+        mockMvc.perform(get("/getTransaction")
+                        .param("accountId", accountId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0]").exists());
+
+        verify(accountCrudService, times(1)).getTransaction(accountId);
+    }
+
+    @Test
+    void testGetTransaction_invalidAccount() throws Exception {
+        Long accountId = 1L;
+
+        when(accountCrudService.getTransaction(accountId)).thenThrow(new InvalidAccountException("Invalid account"));
+
+        mockMvc.perform(get("/getTransaction")
+                        .param("accountId", accountId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode").value(BizErrorCodeEnum.GET_TRANSACTION_FAILED.name()));
+
+        verify(accountCrudService, times(1)).getTransaction(accountId);
+    }
+
+    @Test
+    void testGetBalance_success() throws Exception {
+        Long accountId = 1L;
+        Double balance = 100.0;
+
+        when(accountCrudService.getBalance(accountId)).thenReturn(balance);
+
+        mockMvc.perform(get("/getBalance")
+                        .param("accountId", accountId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.accountBalance").value(balance));
+
+        verify(accountCrudService, times(1)).getBalance(accountId);
+    }
+
+    @Test
+    void testGetBalance_invalidAccount() throws Exception {
+        Long accountId = 1L;
+
+        when(accountCrudService.getBalance(accountId)).thenThrow(new InvalidAccountException("Invalid account"));
+
+        mockMvc.perform(get("/getBalance")
+                        .param("accountId", accountId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode").value(BizErrorCodeEnum.GET_TRANSACTION_FAILED.name()));
+
+        verify(accountCrudService, times(1)).getBalance(accountId);
+    }
+
+    @Test
+    void testGetBalance_nullBalance() throws Exception {
+        Long accountId = 1L;
+
+        when(accountCrudService.getBalance(accountId)).thenReturn(null);
+
+        mockMvc.perform(get("/getBalance")
+                        .param("accountId", accountId.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode").value(BizErrorCodeEnum.GET_TRANSACTION_FAILED.name()));
+
+        verify(accountCrudService, times(1)).getBalance(accountId);
     }
 }
