@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -84,13 +85,37 @@ public class AccountCrudController {
         }
     }
 
+    @GetMapping("/getBalance")
+    public ResponseResult getBalance(@RequestParam(value = "accountId") Long accountId) {
+        log.debug("Start of the getBalance accountId: {}", accountId);
+        try {
+            Double balance = accountCrudService.getBalance(accountId);
+            if (Objects.nonNull(balance)) {
+                log.debug("End of the getBalance, accountId: {}, balance: {}", accountId, balance);
+                return ResponseResult.success(Map.of("accountBalance", balance));
+            }
+        } catch (InvalidAccountException ex) {
+            log.error("End of the getBalance, accountId: {} , failed with InvalidAccountException", accountId, ex);
+            return ResponseResult.failure(BizErrorCodeEnum.GET_TRANSACTION_FAILED, ex.getMessage());
+        } catch (Exception ex) {
+            log.error("End of the getBalance, accountId: {}, failed with Exception", accountId, ex);
+            return ResponseResult.failure(BizErrorCodeEnum.SYSTEM_ERROR);
+        }
+        return ResponseResult.failure(BizErrorCodeEnum.GET_TRANSACTION_FAILED);
+    }
 
-    private static User getUserFromRequestModel(CreateAccountRequestModel createAccountRequestModel) {
+    private static User getUserFromRequestModel(CreateAccountRequestModel createAccountRequestModel) throws CreateAccountException {
+        Role role;
+        try {
+            role = Role.of(createAccountRequestModel.role());
+        } catch (IllegalArgumentException ex) {
+            throw new CreateAccountException("Invalid role code, Please use 'user' / 'admin' for role");
+        }
         User user = User.builder()
                 .name(createAccountRequestModel.name())
                 .userName(createAccountRequestModel.userName())
                 .password(createAccountRequestModel.password())
-                .role(Role.of(createAccountRequestModel.role()))
+                .role(role)
                 .build();
         return user;
     }

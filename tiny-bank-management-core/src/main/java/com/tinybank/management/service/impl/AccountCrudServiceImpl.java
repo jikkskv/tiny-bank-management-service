@@ -85,6 +85,15 @@ public class AccountCrudServiceImpl implements AccountCrudService {
         return List.of();
     }
 
+    @Override
+    public Double getBalance(Long accountId) throws InvalidAccountException {
+        if (Objects.nonNull(accountId)) {
+            Account account = accountStorageDB.getAccount(accountId);
+            return account.getBalance();
+        }
+        return null;
+    }
+
     private boolean validateAccountInfo(Account account) {
         return Objects.nonNull(account) && Objects.nonNull(account.getUser());
     }

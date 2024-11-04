@@ -1,4 +1,7 @@
 package com.tinybank.management.model.account;
 
-public record CreateAccountRequestModel(String name, String userName, String password, String role) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record CreateAccountRequestModel(String name, String userName, String password,
+                                        @Schema(description = "role code", example = "user/admin") String role) {
 }
